@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BetterMe</string>
+    <string name="str_add">Add</string>
+    <string name="hint_et_add">What is it?</string>
+</resources>
