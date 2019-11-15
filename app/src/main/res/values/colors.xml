@@ -3,4 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="bg_row_input_dark">#71768D</color>
+    <color name="bg_row_input_light">#888EAA</color>
+
 </resources>

@@ -60,6 +60,8 @@ public class DialogAdd extends DialogFragment {
 
     }
 
+    //TODO process date
+
     private void addAction() {
 
         //get user's input
