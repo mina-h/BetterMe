@@ -12,6 +12,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.company.betterme.beans.Input;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 public class DialogAdd extends DialogFragment {
 
     private ImageButton mBtnClose;
@@ -36,7 +41,7 @@ public class DialogAdd extends DialogFragment {
         mBtnClose = view.findViewById(R.id.btn_close);
         mInputWhat = view.findViewById(R.id.et_add);
         mInputWhen = view.findViewById(R.id.date_picker);
-        mBtnAdd = view.findViewById(R.id.btn_add);
+        mBtnAdd = view.findViewById(R.id.btn_add_it);
 
         mBtnClose.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -49,7 +54,7 @@ public class DialogAdd extends DialogFragment {
             @Override
             public void onClick(View v) {
                 addAction();
-
+                dismiss();
             }
         });
 
@@ -63,7 +68,18 @@ public class DialogAdd extends DialogFragment {
         //get the time
         long now = System.currentTimeMillis();
 
-        //add these two objects to an object
+        //add these two to an object and add them to realm
+        Realm.init(getActivity());
+        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
+        Realm.setDefaultConfiguration(configuration);
+        Realm realm = Realm.getDefaultInstance();
+        Input input = new Input(what, now, 0, false);
+
+        realm.beginTransaction();
+        realm.copyToRealm(input);
+        realm.commitTransaction();
+        realm.close();
+
 
 
     }
