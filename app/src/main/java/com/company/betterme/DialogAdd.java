@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.company.betterme.beans.Input;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+
+import static com.company.betterme.adapters.AdopterInputs.TAG;
 
 public class DialogAdd extends DialogFragment {
 
@@ -71,16 +74,16 @@ public class DialogAdd extends DialogFragment {
         long now = System.currentTimeMillis();
 
         //add these two to an object and add them to realm
-        Realm.init(getActivity());
-        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
-        Realm.setDefaultConfiguration(configuration);
+
         Realm realm = Realm.getDefaultInstance();
+
         Input input = new Input(what, now, 0, false);
 
         realm.beginTransaction();
         realm.copyToRealm(input);
         realm.commitTransaction();
         realm.close();
+        Log.d(TAG, "aaa");
 
 
 

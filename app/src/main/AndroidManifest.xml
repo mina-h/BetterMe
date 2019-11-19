@@ -3,6 +3,7 @@
     package="com.company.betterme">
 
     <application
+        android:name=".AppBetterMe"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

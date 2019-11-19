@@ -2,28 +2,58 @@ package com.company.betterme;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import  android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.company.betterme.adapters.AdopterInputs;
+import com.company.betterme.beans.Input;
+
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity  {
 
     Toolbar mToolbar;
     Button  mBtnAdd;
-    RecyclerView mRecycker;
+    RecyclerView mRecycler;
+    //create a realm object to query data
+    Realm mRealm;
+    RealmResults<Input> mResults;
+    AdopterInputs mAdopter;
+    private static final String TAG = "MainActivity";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initializing realm
+        mRealm = Realm.getDefaultInstance(); //but it must be set first / by making a specific class (App) for app and
+        // add the values there, there is no need to do it every time
+
+        //making a query
+        mResults = mRealm.where(Input.class).findAllAsync();
+
         mBtnAdd = findViewById(R.id.btn_add);
-        mRecycker = findViewById(R.id.rv_inputs);
+        mRecycler = findViewById(R.id.rv_inputs);
+        mAdopter = new AdopterInputs(this, mResults);
+        mRecycler.setAdapter(mAdopter);
+
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        mRecycler.setLayoutManager(manager);
+       // mRecycler.setAdapter(new AdopterInputs(this, mResults));
 
         mBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,12 +71,37 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    // to get notified when a Realm instance has been updated
+    private RealmChangeListener mChangeListener = new RealmChangeListener() {
+        @Override
+        public void onChange(Object o) {
+            Log.d(TAG, "onChange: ");
+            mAdopter.update(mResults);
+        }
+    };
+
+
     private void showDialogAdd() {
         //create an object of dialog
         DialogAdd dialog = new DialogAdd();
         //show the dialog by passing fragment manager
         dialog.show(getSupportFragmentManager(), "Add");
 
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        // The listeners will be executed when changes are committed
+        mResults.addChangeListener(mChangeListener);
+
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        //Removes the change listener
+        mResults.removeChangeListener(mChangeListener);
     }
 
     private void initBackgroundImage(){
