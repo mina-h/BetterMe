@@ -19,16 +19,16 @@
 
         />
 
-    <android.support.v7.widget.RecyclerView
+    <com.company.betterme.widgets.InputRecyclerView
         android:id="@+id/rv_inputs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         />
 
     <include layout="@layout/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"/>
+        android:id="@+id/empty"
+        />
 
 </RelativeLayout>

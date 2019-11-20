@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.company.betterme.adapters.AdopterInputs;
 import com.company.betterme.beans.Input;
+import com.company.betterme.widgets.InputRecyclerView;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -25,10 +26,11 @@ public class MainActivity extends AppCompatActivity  {
 
     Toolbar mToolbar;
     Button  mBtnAdd;
-    RecyclerView mRecycler;
+    InputRecyclerView mRecycler;
     //create a realm object to query data
     Realm mRealm;
     RealmResults<Input> mResults;
+    View mEmptyView;
     AdopterInputs mAdopter;
     private static final String TAG = "MainActivity";
 
@@ -47,12 +49,23 @@ public class MainActivity extends AppCompatActivity  {
         mResults = mRealm.where(Input.class).findAllAsync();
 
         mBtnAdd = findViewById(R.id.btn_add);
+        mToolbar = findViewById(R.id.toolbar);
+        mEmptyView = findViewById(R.id.empty);
+
         mRecycler = findViewById(R.id.rv_inputs);
+        //hide toolbar when the recycle view is empty
+        mRecycler.hideIfEmpty(mToolbar);
+        //take the empty layout and show it when recycler view is empty
+        mRecycler.showIfEmpty(mEmptyView);
+
         mAdopter = new AdopterInputs(this, mResults);
         mRecycler.setAdapter(mAdopter);
 
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        mRecycler.setLayoutManager(manager);
+//        LinearLayoutManager manager = new LinearLayoutManager(this);
+//        mRecycler.setLayoutManager(manager);
+
+
+
        // mRecycler.setAdapter(new AdopterInputs(this, mResults));
 
         mBtnAdd.setOnClickListener(new View.OnClickListener() {
@@ -62,9 +75,10 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
-        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setTitleTextColor(0xFFFFFFFF);
+
+
 
         //Addjust the image by Glide library so that it can be shown perfectly on any device
         initBackgroundImage();
