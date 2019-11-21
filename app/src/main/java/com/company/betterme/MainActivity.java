@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.company.betterme.adapters.AdopterInputs;
+import com.company.betterme.adapters.Divider;
 import com.company.betterme.beans.Input;
 import com.company.betterme.widgets.InputRecyclerView;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity  {
         mEmptyView = findViewById(R.id.empty);
 
         mRecycler = findViewById(R.id.rv_inputs);
+        mRecycler.addItemDecoration(new Divider(this, LinearLayoutManager.VERTICAL));
         //hide toolbar when the recycle view is empty
         mRecycler.hideIfEmpty(mToolbar);
         //take the empty layout and show it when recycler view is empty

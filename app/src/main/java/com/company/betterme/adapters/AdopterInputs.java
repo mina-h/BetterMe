@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.company.betterme.R;
@@ -16,8 +17,11 @@ import java.util.ArrayList;
 
 import io.realm.RealmResults;
 
-public class AdopterInputs extends RecyclerView.Adapter<AdopterInputs.InputHolder> {
+public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+
+    public static final int ITEM = 0;
+    public static final int FOOTER = 1;
     private LayoutInflater mInflater;
 
     //test
@@ -39,36 +43,60 @@ public class AdopterInputs extends RecyclerView.Adapter<AdopterInputs.InputHolde
     }
 
     //test
-    public static ArrayList<String> generateValues(){
-        ArrayList<String> values = new ArrayList<>();
-        for (int i = 1; i < 101; i++){
-            values.add("item" + i);
-        }
-        return values;
-    }
+//    public static ArrayList<String> generateValues(){
+//        ArrayList<String> values = new ArrayList<>();
+//        for (int i = 1; i < 101; i++){
+//            values.add("item" + i);
+//        }
+//        return values;
+//    }
 
+
+    @Override
+    public int getItemViewType(int position) {
+
+        if(mResults==null || position<mResults.size()){
+            return ITEM;
+        }
+        else {
+            return FOOTER;
+        }
+
+
+    }
 
     @NonNull
     @Override
-    public InputHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+
+        if (i == FOOTER){
+            View view =  mInflater.inflate(R.layout.footer,viewGroup,false);
+            return new FooteHolder(view);
+
+        }
+
 
         View view =  mInflater.inflate(R.layout.row_input,viewGroup,false);
-        InputHolder holder = new InputHolder(view);
-        Log.d(TAG, "onCreateViewHolder: ");
-        return holder;
+        return new InputHolder(view);
+       // Log.d(TAG, "onCreateViewHolder: ");
     }
 
     @Override
-    public void onBindViewHolder(@NonNull InputHolder inputHolder, int i) {
-        Input input = mResults.get(i);
-        inputHolder.mTextWhat.setText(input.getWhat());
-        Log.d(TAG, "onBindViewHolder: " + i);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
+        if(holder instanceof InputHolder){
+            InputHolder inputHolder = (InputHolder) holder;
+            Input input = mResults.get(i);
+            inputHolder.mTextWhat.setText(input.getWhat());
+
+        }
+
+       // Log.d(TAG, "onBindViewHolder: " + i);
 
     }
 
     @Override
     public int getItemCount() {
-        return mResults.size();
+        return mResults.size() + 1;
     }
 
     public static class InputHolder extends RecyclerView.ViewHolder{
@@ -77,6 +105,16 @@ public class AdopterInputs extends RecyclerView.Adapter<AdopterInputs.InputHolde
         public InputHolder(@NonNull View itemView) {
             super(itemView);
             mTextWhat = itemView.findViewById(R.id.tv_what);
+        }
+    }
+
+    public static class FooteHolder extends RecyclerView.ViewHolder{
+
+        Button mBtnAdd;
+
+        public FooteHolder(@NonNull View itemView) {
+            super(itemView);
+            mBtnAdd = itemView.findViewById(R.id.btn_footer);
         }
     }
 }
