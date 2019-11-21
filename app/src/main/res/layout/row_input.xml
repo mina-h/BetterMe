@@ -7,8 +7,8 @@
     android:padding="22dp">
 
     <ImageView
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:src="@drawable/ic_star_border"
         android:background="@null"
         />

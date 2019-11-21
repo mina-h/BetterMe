@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.company.betterme.adapters.AddListener;
 import com.company.betterme.adapters.AdopterInputs;
 import com.company.betterme.adapters.Divider;
 import com.company.betterme.beans.Input;
@@ -25,6 +26,8 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity  {
 
+
+    private static final String TAG = "MainActivity";
     Toolbar mToolbar;
     Button  mBtnAdd;
     InputRecyclerView mRecycler;
@@ -33,7 +36,14 @@ public class MainActivity extends AppCompatActivity  {
     RealmResults<Input> mResults;
     View mEmptyView;
     AdopterInputs mAdopter;
-    private static final String TAG = "MainActivity";
+    private AddListener mAddListener = new AddListener() {
+        @Override
+        public void add() {
+            showDialogAdd();
+
+        }
+    };
+
 
 
 
@@ -60,7 +70,7 @@ public class MainActivity extends AppCompatActivity  {
         //take the empty layout and show it when recycler view is empty
         mRecycler.showIfEmpty(mEmptyView);
 
-        mAdopter = new AdopterInputs(this, mResults);
+        mAdopter = new AdopterInputs(this, mResults, mAddListener);
         mRecycler.setAdapter(mAdopter);
 
 //        LinearLayoutManager manager = new LinearLayoutManager(this);
