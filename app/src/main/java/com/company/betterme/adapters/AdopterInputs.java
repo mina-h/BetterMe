@@ -15,9 +15,10 @@ import com.company.betterme.beans.Input;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener {
 
 
     public static final int ITEM = 0;
@@ -27,17 +28,21 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private RealmResults<Input> mResults;
     public static final  String TAG = "T";
     private AddListener mAddListener;
+    //not sure if its the currect usage but it works:
+    private Realm mRealm; //= Realm.getDefaultInstance();
 
-    public AdopterInputs(Context context, RealmResults<Input> results){
+    public AdopterInputs(Context context, Realm realm, RealmResults<Input> results){
         mInflater = LayoutInflater.from(context);
+        mRealm = realm;
        // mResults = results; bejae in mishe update function ro Ntekhab kard
         update(results);
     }
 
-    public AdopterInputs(Context context, RealmResults<Input> results, AddListener listener){
+    public AdopterInputs(Context context, Realm realm, RealmResults<Input> results, AddListener listener){
         mInflater = LayoutInflater.from(context);
         // mResults = results; bejae in mishe update function ro Ntekhab kard
         update(results);
+        mRealm = realm;
         mAddListener = listener;
     }
 
@@ -104,7 +109,23 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemCount() {
-        return mResults.size() + 1;
+        if(mResults == null || mResults.isEmpty()){
+            return 0;
+        }else {
+            return mResults.size() + 1;
+        }
+    }
+
+    @Override
+    public void onSwipe(int position) {
+        if(position<mResults.size()){
+            //deleting an item from database
+            mRealm.beginTransaction();
+            mResults.get(position).deleteFromRealm();
+            mRealm.commitTransaction();
+            notifyItemRemoved(position);
+        }
+
     }
 
     public static class InputHolder extends RecyclerView.ViewHolder{

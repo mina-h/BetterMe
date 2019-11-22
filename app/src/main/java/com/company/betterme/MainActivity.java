@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import  android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.company.betterme.adapters.AddListener;
 import com.company.betterme.adapters.AdopterInputs;
 import com.company.betterme.adapters.Divider;
+import com.company.betterme.adapters.SimpleTouchCallback;
 import com.company.betterme.beans.Input;
 import com.company.betterme.widgets.InputRecyclerView;
 
@@ -70,8 +72,12 @@ public class MainActivity extends AppCompatActivity  {
         //take the empty layout and show it when recycler view is empty
         mRecycler.showIfEmpty(mEmptyView);
 
-        mAdopter = new AdopterInputs(this, mResults, mAddListener);
+        mAdopter = new AdopterInputs(this, mRealm, mResults, mAddListener);
         mRecycler.setAdapter(mAdopter);
+        SimpleTouchCallback callback = new SimpleTouchCallback(mAdopter);
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(mRecycler);
+
 
 //        LinearLayoutManager manager = new LinearLayoutManager(this);
 //        mRecycler.setLayoutManager(manager);
