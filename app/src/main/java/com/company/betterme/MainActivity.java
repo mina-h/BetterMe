@@ -1,5 +1,6 @@
 package com.company.betterme;
 
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -162,11 +164,44 @@ public class MainActivity extends AppCompatActivity  {
         int id = item.getItemId();
         switch (id){
             case R.id.action_add:
-                Toast.makeText(MainActivity.this, "Add was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                showDialogAdd();
+                //Toast.makeText(MainActivity.this, "Add was clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_sort_ascending_date:
+                 mResults = mRealm.where(Input.class).sort("when").findAllAsync();
+                 mResults.addChangeListener(mChangeListener);
+                return true;
+            case R.id.action_sort_descending_date:
+                mResults = mRealm.where(Input.class).sort("when", Sort.DESCENDING).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+
+                return true;
+            case R.id.action_show_complete:
+                mResults = mRealm.where(Input.class).equalTo("completed", true).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+
+                return true;
+            case R.id.action_show_incomplete:
+                mResults = mRealm.where(Input.class).equalTo("completed", false).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+
+
+                return true;
+
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void save(int filterOption){
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("filter", filterOption);
+        editor.apply();
+    }
+
+    private void load(){
+
     }
 
     @Override
