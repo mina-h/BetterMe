@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +106,8 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             Input input = mResults.get(i);
          //   inputHolder.mTextWhat.setText(input.getWhat());
             inputHolder.setWhat(input.getWhat());
+            inputHolder.setWhen(input.getWhen());
+
             inputHolder.setBackground(input.isCompleted());
 
 
@@ -185,6 +188,11 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             mItemView.setBackground(drawable);
             }
+
+        public void setWhen(long when) {
+            mTextWhen.setText(DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(),DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL));
+
+        }
     }
 
     public static class FooteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

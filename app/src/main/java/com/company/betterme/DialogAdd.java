@@ -1,5 +1,6 @@
 package com.company.betterme;
 
+import java.util.Calendar;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.company.betterme.beans.Input;
 
@@ -69,6 +71,16 @@ public class DialogAdd extends DialogFragment {
 
         //get user's input
         String what = mInputWhat.getText().toString();
+        String date = mInputWhen.getDayOfMonth() + "/" + mInputWhen.getMonth() + "/" + mInputWhen.getYear();
+        //Toast.makeText(getActivity(), date, Toast.LENGTH_SHORT).show();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, mInputWhen.getDayOfMonth());
+        calendar.set(Calendar.MONTH, mInputWhen.getMonth());
+        calendar.set(Calendar.YEAR, mInputWhen.getYear());
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
 
         //get the time
         long now = System.currentTimeMillis();
@@ -77,7 +89,7 @@ public class DialogAdd extends DialogFragment {
 
         Realm realm = Realm.getDefaultInstance();
 
-        Input input = new Input(what, now, 0, false);
+        Input input = new Input(what, now, calendar.getTimeInMillis(), false);
 
         realm.beginTransaction();
         realm.copyToRealm(input);
