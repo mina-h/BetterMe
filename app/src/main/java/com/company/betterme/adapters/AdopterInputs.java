@@ -1,7 +1,9 @@
 package com.company.betterme.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public static final int ITEM = 0;
     public static final int FOOTER = 1;
+    private  MarkListener mMarkListener;
     private LayoutInflater mInflater;
     //test
     private RealmResults<Input> mResults;
@@ -38,12 +41,13 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         update(results);
     }
 
-    public AdopterInputs(Context context, Realm realm, RealmResults<Input> results, AddListener listener){
+    public AdopterInputs(Context context, Realm realm, RealmResults<Input> results, AddListener listener, MarkListener markListener){
         mInflater = LayoutInflater.from(context);
         // mResults = results; bejae in mishe update function ro Ntekhab kard
         update(results);
         mRealm = realm;
         mAddListener = listener;
+        mMarkListener = markListener;
     }
 
 
@@ -90,7 +94,7 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
         View view =  mInflater.inflate(R.layout.row_input,viewGroup,false);
-        return new InputHolder(view);
+        return new InputHolder(view, mMarkListener);
        // Log.d(TAG, "onCreateViewHolder: ");
     }
 
@@ -99,7 +103,10 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if(holder instanceof InputHolder){
             InputHolder inputHolder = (InputHolder) holder;
             Input input = mResults.get(i);
-            inputHolder.mTextWhat.setText(input.getWhat());
+         //   inputHolder.mTextWhat.setText(input.getWhat());
+            inputHolder.setWhat(input.getWhat());
+            inputHolder.setBackground(input.isCompleted());
+
 
         }
 
@@ -128,13 +135,56 @@ public class AdopterInputs extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
-    public static class InputHolder extends RecyclerView.ViewHolder{
+    public void markComplete(int position) {
+        if (position < mResults.size()) {
+            mRealm.beginTransaction();
+            mResults.get(position).setCompleted(true);
+            mRealm.commitTransaction();
+            notifyItemChanged(position);
+        }
+    }
+
+
+
+
+    public static class InputHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTextWhat;
-        public InputHolder(@NonNull View itemView) {
+        TextView mTextWhen;
+        MarkListener mMarklistener;
+        Context mContext;
+        View mItemView;
+
+        public InputHolder(@NonNull View itemView, MarkListener listener) {
             super(itemView);
+            mItemView = itemView;
+            mContext = itemView.getContext();
+            itemView.setOnClickListener(this);
             mTextWhat = itemView.findViewById(R.id.tv_what);
+            mTextWhen = itemView.findViewById(R.id.tv_when);
+            mMarklistener = listener;
         }
+
+        public void setWhat(String what){
+            mTextWhat.setText(what);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            mMarklistener.onMark(getAdapterPosition());
+        }
+
+        public void setBackground(boolean completed) {
+            Drawable drawable;
+            if(completed){
+               drawable =  ContextCompat.getDrawable(mContext, R.color.bg_input_complete);
+            }
+            else{
+               drawable = ContextCompat.getDrawable(mContext, R.drawable.bg_row_input);
+            }
+            mItemView.setBackground(drawable);
+            }
     }
 
     public static class FooteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

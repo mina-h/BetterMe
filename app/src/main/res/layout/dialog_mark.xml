@@ -8,8 +8,8 @@
 
     <ImageButton
         android:id="@+id/btn_close"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:src="@drawable/ic_clear"
         android:scaleType="fitCenter"
         android:background="@null"
@@ -26,6 +26,7 @@
         android:layout_marginTop="96dp"
         android:layout_marginBottom="96dp"
         android:textSize="24dp"
+        android:textColor="@android:color/white"
         android:background="@null"
         android:textAllCaps="false"
         android:text="Mark Completed"

@@ -5,6 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="bg_row_input_dark">#4D1CAFB0</color>
     <color name="bg_row_input_light">#4D68C0C1</color>
+    <color name="bg_input_complete">#ED68C0C1</color>
     <color name="light_green">#66BFBF</color>
 
 

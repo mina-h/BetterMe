@@ -16,7 +16,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.company.betterme.adapters.AddListener;
 import com.company.betterme.adapters.AdopterInputs;
+import com.company.betterme.adapters.CompleteListener;
 import com.company.betterme.adapters.Divider;
+import com.company.betterme.adapters.MarkListener;
 import com.company.betterme.adapters.SimpleTouchCallback;
 import com.company.betterme.beans.Input;
 import com.company.betterme.widgets.InputRecyclerView;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity  {
         //take the empty layout and show it when recycler view is empty
         mRecycler.showIfEmpty(mEmptyView);
 
-        mAdopter = new AdopterInputs(this, mRealm, mResults, mAddListener);
+        mAdopter = new AdopterInputs(this, mRealm, mResults, mAddListener, mMarkListener);
         mRecycler.setAdapter(mAdopter);
         SimpleTouchCallback callback = new SimpleTouchCallback(mAdopter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
@@ -113,12 +115,36 @@ public class MainActivity extends AppCompatActivity  {
     };
 
 
+    private MarkListener mMarkListener = new MarkListener() {
+        @Override
+        public void onMark(int position) {
+            showDialogMark(position);
+        }
+    };
+
+    private CompleteListener mCompleteListener = new CompleteListener() {
+        @Override
+        public void onComplete(int position) {
+           // Toast.makeText(MainActivity.this, "position in activity" + position, Toast.LENGTH_SHORT).show();
+            mAdopter.markComplete(position);
+        }
+    };
+
     private void showDialogAdd() {
         //create an object of dialog
         DialogAdd dialog = new DialogAdd();
         //show the dialog by passing fragment manager
         dialog.show(getSupportFragmentManager(), "Add");
 
+    }
+
+    private void showDialogMark(int position){
+        DialogMark dialog = new DialogMark();
+        Bundle bundle = new Bundle();
+        bundle.putInt("POSITION", position);
+        dialog.setArguments(bundle);
+        dialog.setCompleteListener(mCompleteListener);
+        dialog.show(getSupportFragmentManager(), "Mark");
     }
 
     @Override
