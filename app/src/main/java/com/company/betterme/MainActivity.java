@@ -2,6 +2,7 @@ package com.company.betterme;
 
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.company.betterme.adapters.AddListener;
 import com.company.betterme.adapters.AdopterInputs;
 import com.company.betterme.adapters.CompleteListener;
 import com.company.betterme.adapters.Divider;
+import com.company.betterme.adapters.Filter;
 import com.company.betterme.adapters.MarkListener;
 import com.company.betterme.adapters.SimpleTouchCallback;
 import com.company.betterme.beans.Input;
@@ -65,9 +67,11 @@ public class MainActivity extends AppCompatActivity  {
         //initializing realm
         mRealm = Realm.getDefaultInstance(); //but it must be set first / by making a specific class (App) for app and
         // add the values there, there is no need to do it every time
+        int filterOption = load();
+        loadResults(filterOption);
 
         //making a query
-        mResults = mRealm.where(Input.class).findAllAsync();
+       // mResults = mRealm.where(Input.class).findAllAsync();
 
         mBtnAdd = findViewById(R.id.btn_add);
         mToolbar = findViewById(R.id.toolbar);
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity  {
     private RealmChangeListener mChangeListener = new RealmChangeListener() {
         @Override
         public void onChange(Object o) {
-            Log.d(TAG, "onChange: ");
+          //  Log.d(TAG, "onChange: ");
             mAdopter.update(mResults);
         }
     };
@@ -162,47 +166,88 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        boolean handle = true;
+        int filterOption = Filter.NONE;
+
         switch (id){
             case R.id.action_add:
                 showDialogAdd();
                 //Toast.makeText(MainActivity.this, "Add was clicked", Toast.LENGTH_SHORT).show();
-                return true;
+                 break;
             case R.id.action_sort_ascending_date:
-                 mResults = mRealm.where(Input.class).sort("when").findAllAsync();
-                 mResults.addChangeListener(mChangeListener);
-                return true;
+                filterOption = Filter.LEAST_TIME_LEFT;
+                save(Filter.LEAST_TIME_LEFT);
+
+                break;
             case R.id.action_sort_descending_date:
-                mResults = mRealm.where(Input.class).sort("when", Sort.DESCENDING).findAllAsync();
-                mResults.addChangeListener(mChangeListener);
+                filterOption = Filter.MOST_TIME_LEFT;
+                save(Filter.MOST_TIME_LEFT);
 
-                return true;
+                break;
             case R.id.action_show_complete:
-                mResults = mRealm.where(Input.class).equalTo("completed", true).findAllAsync();
-                mResults.addChangeListener(mChangeListener);
+                filterOption = Filter.COMPLETE;
+                save(Filter.COMPLETE);
+                Log.d(TAG, "save");
 
-                return true;
+                break;
             case R.id.action_show_incomplete:
-                mResults = mRealm.where(Input.class).equalTo("completed", false).findAllAsync();
-                mResults.addChangeListener(mChangeListener);
-
-
-                return true;
-
+                filterOption = Filter.INCOMPLETE;
+                save(Filter.INCOMPLETE);
+                break;
+            default:
+                handle = false;
+                break;
 
         }
-        return super.onOptionsItemSelected(item);
+        loadResults(filterOption);
+        return handle;
+    }
+
+    private void loadResults(int filterOption){
+        switch (filterOption){
+            case Filter.NONE:
+                mResults = mRealm.where(Input.class).findAllAsync();
+                break;
+            case Filter.LEAST_TIME_LEFT:
+                mResults = mRealm.where(Input.class).sort("when").findAllAsync();
+                break;
+            case Filter.MOST_TIME_LEFT:
+                mResults = mRealm.where(Input.class).sort("when", Sort.DESCENDING).findAllAsync();
+                break;
+            case Filter.COMPLETE:
+                mResults = mRealm.where(Input.class).equalTo("completed", true).findAllAsync();
+                Log.d(TAG, "loaddd");
+
+                break;
+            case Filter.INCOMPLETE:
+                mResults = mRealm.where(Input.class).equalTo("completed", false).findAllAsync();
+                break;
+        }
+        mResults.addChangeListener(mChangeListener);
+
     }
 
     private void save(int filterOption){
+        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        //SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+
+
         SharedPreferences pref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
+        // editor.clear();
         editor.putInt("filter", filterOption);
         editor.apply();
     }
 
-    private void load(){
+    private int load(){
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+        //SharedPreferences pref = getSharedPreferences("pref", MODE_PRIVATE);
+
+        int filterOption = pref.getInt("filter", Filter.NONE);
+        return filterOption;
 
     }
+
 
     @Override
     protected void onStart(){
